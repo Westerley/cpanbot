@@ -1,0 +1,55 @@
+<h2> Coordenação </h2>
+
+<div class="row">
+
+    <div class="col-md-5 col-sm-5 col-xs-12 gutter">
+
+        <div class="sales">
+            <h2> Adicionar Coordenação </h2>
+
+            <div class="btn-group">
+                <a class="add-project" routerLink="/coordination/add">
+                    <i class="fa fa-plus" aria-hidden="true"> </i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-12 col-sm-12 col-xs-12 gutter">
+
+        <div class="sales report">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th> Curso </th>
+                        <th> Coordenador(a) </th>
+                        <th> Ações </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let coordination of coordination | paginate: { itemsPerPage: 6, currentPage: page }">
+                        <td> {{coordination.course}} </td>
+                        <td> {{coordination.coordinator}} </td>
+                        <td>
+                            <a [routerLink]="['/coordination/edit', coordination._id]" class="btn btn-primary"> <i class="fa fa-pencil" aria-hidden="true"> </i> </a>
+                            <a (click)="deleteCoordination(coordination._id)" class="btn btn-danger"> <i class="fa fa-times" aria-hidden="true"></i> </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p *ngIf="coordination == 0"
+               [style.color]="'#8492af'"
+               [style.text-align]="'center'"
+               [style.fontSize]="'18px'"> Nenhuma informação encontrada </p>
+
+
+            <div class="align-pagination">
+                <pagination-controls style="font-size: 15px !important;" (pageChange)="page = $event" autoHide="true"> </pagination-controls>
+            </div>
+
+        </div>
+
+    </div>
+</div>

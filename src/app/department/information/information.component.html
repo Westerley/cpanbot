@@ -1,0 +1,54 @@
+<h3> Perguntas </h3>
+
+<div class="row">
+
+    <div class="col-md-5 col-sm-5 col-xs-12 gutter">
+
+        <div class="sales">
+            <h2> Adicionar Pergunta </h2>
+
+            <div class="btn-group">
+                <a class="add-project" [routerLink]="['/department/info/add', idDepartment]">
+                    <i class="fa fa-plus" aria-hidden="true"> </i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 col-sm-12 col-xs-12 gutter">
+
+        <div class="sales report">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th> Pergunta </th>
+                    <th> Resposta </th>
+                    <th> Ações </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let information of informations | paginate: { itemsPerPage: 6, currentPage: page }">
+                    <td> {{information.question}} </td>
+                    <td> {{information.answer}} </td>
+                    <td>
+                        <a [routerLink]="['/department/info/edit', idDepartment, information._id]" class="btn btn-primary"> <i class="fa fa-pencil" aria-hidden="true"></i> </a>
+                        <a (click)="deleteInformation(information._id)" class="btn btn-danger"> <i class="fa fa-times" aria-hidden="true"></i> </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <p *ngIf="informations == 0"
+               [style.color]="'#8492af'"
+               [style.text-align]="'center'"
+               [style.fontSize]="'18px'"> Nenhuma pergunta encontrada </p>
+
+            <div class="align-pagination">
+                <pagination-controls class="pagination" (pageChange)="page = $event" autoHide="true">
+                </pagination-controls>
+            </div>
+
+        </div>
+
+    </div>
+</div>

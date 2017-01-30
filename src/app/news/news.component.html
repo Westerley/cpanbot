@@ -1,0 +1,39 @@
+<h2> Notícias </h2>
+
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12 gutter">
+
+        <div class="sales report">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th> Título </th>
+                        <th> Data </th>
+                        <th> Ações </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let newss of news | paginate: { itemsPerPage: 6, currentPage: page }">
+                        <td> {{newss.title}} </td>
+                        <td> {{newss.infodata}} </td>
+                        <td>
+                            <a (click)="deleteNews(newss._id)" class="btn btn-danger"> <i class="fa fa-times" aria-hidden="true"></i> </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p *ngIf="news == 0"
+               [style.color]="'#8492af'"
+               [style.text-align]="'center'"
+               [style.fontSize]="'18px'"> Nenhuma notícia encontrada </p>
+
+
+            <div class="align-pagination">
+                <pagination-controls style="font-size: 15px !important;" (pageChange)="page = $event" autoHide="true"> </pagination-controls>
+            </div>
+
+        </div>
+
+    </div>
+</div>

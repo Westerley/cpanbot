@@ -1,0 +1,26 @@
+<h3> Adicionar Setor </h3>
+
+<div class="row">
+
+    <div class="col-md-12 col-sm-12 col-xs-12 gutter">
+
+        <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+        <div *ngIf="success" class="alert alert-success">{{success}}</div>
+
+        <form #departmentForm="ngForm" (ngSubmit)="addDepartment()">
+            <input type="text" placeholder="Nome" [(ngModel)]="department.name" name="name" required>
+            <input type="text" placeholder="Descrição" [(ngModel)]="department.description" name="description" required>
+            <input type="text" placeholder="Supervisor" [(ngModel)]="department.supervisor" name="supervisor" required>
+            <input type="text" placeholder="Localização" [(ngModel)]="department.place" name="place" required>
+            <input type="email" placeholder="E-mail" [(ngModel)]="department.email" name="email" required>
+            <input type="text" placeholder="Horário de funcionamento" [(ngModel)]="department.hours_operation" name="hours_operation" required>
+
+            <div style="text-align: center">
+                <button type="submit" class="add-project"> Salvar </button>
+                <button type="button" routerLink="/department" class="cancel"> Fechar </button>
+            </div>
+        </form>
+
+    </div>
+
+</div>

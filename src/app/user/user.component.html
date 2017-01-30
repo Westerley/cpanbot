@@ -1,0 +1,57 @@
+<h2> Usuário </h2>
+
+<div class="row">
+
+    <div class="col-md-5 col-sm-5 col-xs-12 gutter">
+
+        <div class="sales">
+            <h2> Adicionar Usuário </h2>
+
+            <div class="btn-group">
+                <a class="add-project" routerLink="/user/add">
+                    <i class="fa fa-plus" aria-hidden="true"> </i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-12 col-sm-12 col-xs-12 gutter">
+
+        <div class="sales report">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th> Nome </th>
+                    <th> E-mail </th>
+                    <th> Ações </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let user of users | paginate: { itemsPerPage: 6, currentPage: page }">
+                    <td> {{user.name}} </td>
+                    <td> {{user.email}} </td>
+                    <td>
+                        <a [routerLink]="['/user/edit', user._id]"  class="btn btn-primary"> <i class="fa fa-pencil" aria-hidden="true"> </i> </a>
+                        <a [routerLink]="['/user/pass', user._id]" class="btn btn-default"> <i class="fa fa-lock" aria-hidden="true"> </i> </a>
+                        <a (click)="deleteUser(user._id)" class="btn btn-danger"> <i class="fa fa-times" aria-hidden="true"></i> </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <p *ngIf="news == 0"
+               [style.color]="'#8492af'"
+               [style.text-align]="'center'"
+               [style.fontSize]="'18px'"> Nenhuma notícia encontrada </p>
+
+
+            <div class="align-pagination">
+                <pagination-controls style="font-size: 15px !important;" (pageChange)="page = $event" autoHide="true"> </pagination-controls>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

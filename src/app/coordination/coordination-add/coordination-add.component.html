@@ -1,0 +1,26 @@
+<h2> Adicionar Coordenação </h2>
+
+<div class="row">
+
+    <div class="col-md-12 col-sm-12 col-xs-12 gutter">
+
+        <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+        <div *ngIf="success" class="alert alert-success">{{success}}</div>
+
+        <form #userForm="ngForm" (ngSubmit)="addCoordination()">
+            <input type="text" placeholder="Curso" [(ngModel)]="coordination.course" name="course" required>
+            <select name="type" [(ngModel)]="coordination.type" required>
+                <option *ngFor="let option of options" [value]="option"> {{ option }} </option>
+            </select>
+            <input type="text" placeholder="Coordenador(a)" [(ngModel)]="coordination.coordinator" name="coordinator" required>
+            <input type="text" placeholder="Horário de Atendimento" [(ngModel)]="coordination.office_hour" name="office_hour" required>
+            <input type="url" placeholder="Link da página" [(ngModel)]="coordination.link" name="link" required>
+            <div style="text-align: center">
+                <button type="submit" class="add-project"> Salvar </button>
+                <button type="button" routerLink="/coordination" class="cancel"> Cancelar </button>
+            </div>
+        </form>
+
+    </div>
+
+</div>

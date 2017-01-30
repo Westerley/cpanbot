@@ -1,0 +1,23 @@
+<h2> Editar Telefone </h2>
+
+<div class="row">
+
+    <div class="col-md-12 col-sm-12 col-xs-12 gutter">
+
+        <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+        <div *ngIf="success" class="alert alert-success">{{success}}</div>
+
+        <form #telephoneForm="ngForm" (ngSubmit)="editPhone()">
+            <input type="text" placeholder="Nome" name="name" [(ngModel)]="phone.name" required>
+            <select name="option" [(ngModel)]="phone.option" required>
+                <option *ngFor="let option of options" [value]="option"> {{ option }} </option>
+            </select>
+            <input type="tel" placeholder="Telefone" name="telephone" [(ngModel)]="phone.telephone" pattern="\([0-9]{2}\) [0-9]{4}-[0-9]{4}" required>
+            <div style="text-align: center">
+                <button type="submit" class="add-project"> Salvar </button>
+                <button type="button" routerLink="/phone" class="cancel"> Cancelar </button>
+            </div>
+        </form>
+    </div>
+
+</div>

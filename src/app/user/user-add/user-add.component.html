@@ -1,0 +1,23 @@
+<h2> Adicionar Usuário </h2>
+
+<div class="row">
+
+    <div class="col-md-12 col-sm-12 col-xs-12 gutter">
+
+        <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+        <div *ngIf="success" class="alert alert-success">{{success}}</div>
+
+        <form #userForm="ngForm" (ngSubmit)="addUser()">
+            <input type="text" placeholder="Nome" [(ngModel)]="user.name" name="name" required>
+            <input type="email" placeholder="E-mail" [(ngModel)]="user.email" name="email" required>
+            <input type="password" placeholder="Senha" [(ngModel)]="user.password" name="password" minlength="6" required>
+            <input type="password" placeholder="Confirmar Senha" [(ngModel)]="user.password2" name="password2" minlength="6" required>
+            <div style="text-align: center">
+                <button type="submit" class="add-project"> Salvar </button>
+                <button type="button" routerLink="/user" class="cancel"> Cancelar </button>
+            </div>
+        </form>
+
+    </div>
+
+</div>

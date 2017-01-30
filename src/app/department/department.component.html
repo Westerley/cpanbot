@@ -1,0 +1,55 @@
+<h3> Setor </h3>
+
+<div class="row">
+
+    <div class="col-md-5 col-sm-5 col-xs-12 gutter">
+
+        <div class="sales">
+            <h2> Adicionar Setor </h2>
+
+            <div class="btn-group">
+                <a class="add-project" routerLink="/department/add">
+                    <i class="fa fa-plus" aria-hidden="true"> </i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 col-sm-12 col-xs-12 gutter">
+
+        <div class="sales report">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th> Nome </th>
+                    <th> Horário de funcionamento </th>
+                    <th> Ações </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let department of departments | paginate: { itemsPerPage: 6, currentPage: page }">
+                    <td> {{department.name}} </td>
+                    <td> {{department.hours_operation}} </td>
+                    <td>
+                        <a [routerLink]="['/department/edit', department._id]" class="btn btn-primary"> <i class="fa fa-pencil" aria-hidden="true"></i> </a>
+                        <a [routerLink]="['/department/info', department._id]" class="btn btn-default"> <i class="fa fa-info" aria-hidden="true"></i> </a>
+                        <a (click)="deleteDepartment(department._id)" class="btn btn-danger"> <i class="fa fa-times" aria-hidden="true"></i> </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <p *ngIf="departments == 0"
+               [style.color]="'#8492af'"
+               [style.text-align]="'center'"
+               [style.fontSize]="'18px'"> Nenhum setor encontrado </p>
+
+            <div class="align-pagination">
+                <pagination-controls class="pagination" (pageChange)="page = $event" autoHide="true">
+                </pagination-controls>
+            </div>
+
+        </div>
+
+    </div>
+</div>

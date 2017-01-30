@@ -1,0 +1,27 @@
+<div class="container">
+    <div class="card card-container">
+
+        <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+
+        <div class="col-sm-3 col-md-3 col-xs-3"> </div>
+
+        <div class="col-sm-6 col-md-6 col-xs-6">
+            <img src="/assets/ufms_logo.jpg" class="img-responsive" style="height: 110px; width: 100px; margin-bottom: 20px; border-radius: 10%">
+        </div>
+
+        <div class="col-sm-3 col-md-3 col-xs-3"> </div>
+
+        <p id="profile-name" class="profile-name-card"></p>
+
+        <form class="form-signin" name="form" (ngSubmit)="login()">
+            <span id="reauth-email" class="reauth-email"> </span>
+            <input type="email" id="inputEmail" name="email" class="form-control" placeholder="E-mail" [(ngModel)]="email" required autofocus>
+            <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Senha" [(ngModel)]="password" required>
+            <button [disabled]="loading" class="btn btn-lg btn-primary btn-block btn-signin">
+                <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+                <span> Entrar </span>
+            </button>
+        </form>
+
+    </div>
+</div>

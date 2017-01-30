@@ -1,0 +1,22 @@
+<h2> Editar Usuário </h2>
+
+<div class="row">
+
+    <div class="col-md-12 col-sm-12 col-xs-12 gutter">
+
+        <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+        <div *ngIf="success" class="alert alert-success">{{success}}</div>
+
+        <form #userForm="ngForm" (ngSubmit)="editPassword()">
+            <input type="password" placeholder="Senha" [(ngModel)]="password" name="password" minlength="6" required>
+            <input type="password" placeholder="Confirmar Senha" [(ngModel)]="password2" name="password2" minlength="6" required>
+
+            <div style="text-align: center">
+                <button type="submit" class="add-project"> Salvar </button>
+                <button type="button" routerLink="/user" class="cancel"> Cancelar </button>
+            </div>
+        </form>
+
+    </div>
+
+</div>
