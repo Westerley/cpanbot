@@ -22,8 +22,9 @@ export class NewsComponent implements OnInit {
             }, err => {
                 if (typeof err.error === 'undefined') {
                     this.router.navigate(['/login']);
+                } else {
+                    alert(" " + err.error);
                 }
-                alert('Não foi possivel carregar as notícias');
             });
     }
 
@@ -45,7 +46,7 @@ export class NewsComponent implements OnInit {
                     if (typeof err.error === 'undefined') {
                         this.router.navigate(['/login']);
                     } else {
-                        alert('Não foi possivel deletar a notícia');
+                        alert(" " + err.error);
                     }
                 });
         }

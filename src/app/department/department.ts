@@ -3,8 +3,4 @@ export class Department {
     id_depart: number;
     name: string;
     description: string;
-    supervisor: string;
-    place: string;
-    email: string;
-    hours_operation: string;
 }

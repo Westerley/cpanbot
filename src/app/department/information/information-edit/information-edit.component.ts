@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 import { Information } from '../information';
 import { InformationService } from '../information.service';
@@ -19,7 +19,7 @@ export class InformationEditComponent implements OnInit {
     success = '';
     error = '';
 
-    constructor(private activatedRoute: ActivatedRoute, private informationService: InformationService) { }
+    constructor(private router: Router, private activatedRoute: ActivatedRoute, private informationService: InformationService) { }
 
     ngOnInit() {
         this.subscription = this.activatedRoute.params.subscribe(
@@ -29,7 +29,11 @@ export class InformationEditComponent implements OnInit {
                         this.information.question = res.question;
                         this.information.answer = res.answer;
                     }, err => {
-                        alert(" " + err.error);
+                        if (typeof err.error === 'undefined') {
+                            this.router.navigate(['/login']);
+                        } else {
+                            alert(" " + err.error);
+                        }
                     });
             }
         );
@@ -43,8 +47,12 @@ export class InformationEditComponent implements OnInit {
                         this.success = 'Pergunta salva com sucesso';
                         this.error = '';
                     }, err => {
-                        this.error = " " + err.error;
-                        this.success = '';
+                        if (typeof err.error === 'undefined') {
+                            this.router.navigate(['/login']);
+                        } else {
+                            this.error = " " + err.error;
+                            this.success = '';
+                        }
                     });
             }
         );

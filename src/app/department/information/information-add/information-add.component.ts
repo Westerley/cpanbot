@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 import { Information } from '../information';
 import { InformationService } from '../information.service';
@@ -19,7 +19,7 @@ export class InformationAddComponent implements OnInit {
     success = '';
     error = '';
 
-    constructor(private activatedRoute: ActivatedRoute, private informationService: InformationService) { }
+    constructor(private router: Router, private activatedRoute: ActivatedRoute, private informationService: InformationService) { }
 
     ngOnInit() { }
 
@@ -32,8 +32,12 @@ export class InformationAddComponent implements OnInit {
                         this.error = '';
                         this.cleanFields();
                     }, err => {
-                        this.error = " " + err.error;
-                        this.success = '';
+                        if (typeof err.error === 'undefined') {
+                            this.router.navigate(['/login']);
+                        } else {
+                            this.error = " " + err.error;
+                            this.success = '';
+                        }
                     });
             }
         );

@@ -7,7 +7,6 @@ var bodyParser = require('body-parser'),
     config     = require('./config/config'),
     mongoose   = require('mongoose'),
     passport   = require('passport'),
-    index     = require('./routes/index'),
     user       = require('./routes/user'),
     phone      = require('./routes/phone'),
     news       = require('./routes/news'),
@@ -42,9 +41,6 @@ if(process.env.MONGODB_URI) {
 app.disable('x-powered-by');
 
 app.use(express.static(path.join(__dirname, '/../client')));
-// if (app.get('env') === 'production') {
-//     app.use(express.static(path.join(__dirname, '/../client')));
-// }
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(compression());

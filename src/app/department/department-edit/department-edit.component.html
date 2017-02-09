@@ -9,12 +9,7 @@
 
         <form #departmentForm="ngForm" (ngSubmit)="editDepartment()">
             <input type="text" placeholder="Nome" [(ngModel)]="department.name" name="name" required>
-            <input type="text" placeholder="Descrição" [(ngModel)]="department.description" name="description" required>
-            <input type="text" placeholder="Supervisor" [(ngModel)]="department.supervisor" name="supervisor" required>
-            <input type="text" placeholder="Localização" [(ngModel)]="department.place" name="place" required>
-            <input type="email" placeholder="E-mail" [(ngModel)]="department.email" name="email" required>
-            <input type="text" placeholder="Horário de funcionamento" [(ngModel)]="department.hours_operation" name="hours_operation" required>
-
+            <textarea rows="4" placeholder="Descrição" [(ngModel)]="department.description" name="description" required> </textarea>
             <div style="text-align: center">
                 <button type="submit" class="add-project"> Salvar </button>
                 <button type="button" routerLink="/department" class="cancel"> Fechar </button>

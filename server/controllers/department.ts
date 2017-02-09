@@ -4,25 +4,13 @@ var Department  = require('../models/department'),
 exports.save = function (req, res, next) {
     var name            = req.body.name;
     var description     = req.body.description;
-    var supervisor      = req.body.supervisor;
-    var place           = req.body.place;
-    var email           = req.body.email;
-    var hours_operation = req.body.hours_operation;
 
     if (!name) { return res.status(422).send({ error: 'O campo nome é obrigatório'}); }
     if (!description) { return res.status(422).send({ error: 'O campo descrição é obrigatório'}); }
-    if (!supervisor) { return res.status(422).send({ error: 'O campo supervisor é obrigatório'}); }
-    if (!place) { return res.status(422).send({ error: 'O campo endereço é obrigatório'}); }
-    if (!email) { return res.status(422).send({ error: 'O campo e-mail é obrigatório'}); }
-    if (!hours_operation) { return res.status(422).send({ error: 'O campo horário de funcionamento é obrigatório'}); }
 
     var newDepartment = new Department();
     newDepartment.name = name;
     newDepartment.description = description;
-    newDepartment.supervisor = supervisor;
-    newDepartment.place = place;
-    newDepartment.email = email;
-    newDepartment.hours_operation = hours_operation;
     newDepartment.informations = [];
     newDepartment.save(function (err, department) {
         if (err) {
@@ -53,8 +41,7 @@ exports.search = function (req, res, next) {
         if (err) {
             return res.status(422).send( {error: 'Erro ao buscar setor'} );
         }
-        var result = [ { name: department[0].name, description: department[0].description, supervisor: department[0].supervisor,
-            place: department[0].place, hours_operation: department[0].hours_operation, email: department[0].email,
+        var result = [ { name: department[0].name, description: department[0].description,
             phone: tel[0].telephone, informations: department[0].informations } ];
         return res.status(200).json( result );
     });
@@ -77,24 +64,12 @@ exports.edit = function (req, res, next) {
 
         var name            = req.body.name;
         var description     = req.body.description;
-        var supervisor      = req.body.supervisor;
-        var place           = req.body.place;
-        var email           = req.body.email;
-        var hours_operation = req.body.hours_operation;
 
         if (!name) { return res.status(422).send({ error: 'O campo nome é obrigatório'}); }
         if (!description) { return res.status(422).send({ error: 'O campo descrição é obrigatório'}); }
-        if (!supervisor) { return res.status(422).send({ error: 'O campo supervisor é obrigatório'}); }
-        if (!place) { return res.status(422).send({ error: 'O campo endereço é obrigatório'}); }
-        if (!email) { return res.status(422).send({ error: 'O campo e-mail é obrigatório'}); }
-        if (!hours_operation) { return res.status(422).send({ error: 'O campo horário de funcionamento é obrigatório'}); }
 
         department.name = name;
         department.description = description;
-        department.supervisor = supervisor;
-        department.place = place;
-        department.email = email;
-        department.hours_operation = hours_operation;
         department.save(function (err) {
             if (err) {
                 return res.status(422).send( {error: 'Erro ao editar setor'} );

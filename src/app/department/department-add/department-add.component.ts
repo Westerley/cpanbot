@@ -40,10 +40,6 @@ export class DepartmentAddComponent implements OnInit {
     cleanFields() {
         this.department.name = '';
         this.department.description = '';
-        this.department.supervisor = '';
-        this.department.place = '';
-        this.department.email = '';
-        this.department.hours_operation = '';
     }
 
 }

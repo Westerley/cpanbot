@@ -28,10 +28,6 @@ export class DepartmentEditComponent implements OnInit {
                     .subscribe(res => {
                         this.department.name = res.name;
                         this.department.description = res.description;
-                        this.department.supervisor = res.supervisor;
-                        this.department.place = res.place;
-                        this.department.email = res.email;
-                        this.department.hours_operation = res.hours_operation;
                     }, err => {
                         if (typeof err.error === 'undefined') {
                             this.router.navigate(['/login']);

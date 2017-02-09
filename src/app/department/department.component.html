@@ -22,14 +22,14 @@
                 <thead>
                 <tr>
                     <th> Nome </th>
-                    <th> Horário de funcionamento </th>
+                    <th> Descrição </th>
                     <th> Ações </th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr *ngFor="let department of departments | paginate: { itemsPerPage: 6, currentPage: page }">
                     <td> {{department.name}} </td>
-                    <td> {{department.hours_operation}} </td>
+                    <td> {{department.description}} </td>
                     <td>
                         <a [routerLink]="['/department/edit', department._id]" class="btn btn-primary"> <i class="fa fa-pencil" aria-hidden="true"></i> </a>
                         <a [routerLink]="['/department/info', department._id]" class="btn btn-default"> <i class="fa fa-info" aria-hidden="true"></i> </a>
