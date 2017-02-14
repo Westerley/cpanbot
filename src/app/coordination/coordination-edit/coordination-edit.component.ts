@@ -15,7 +15,7 @@ import {Coordination} from "../coordination";
 export class CoordinationEditComponent implements OnInit {
 
     coordination = new Coordination();
-    options = ['BACHARELADO', 'LICENCIATURA'];
+    options = ['BACHARELADO', 'LICENCIATURA', 'PÓSGRADUAÇÃO'];
     error = '';
     success = '';
     subscription: Subscription;

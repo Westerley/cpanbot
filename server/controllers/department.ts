@@ -30,19 +30,11 @@ exports.list = function (req, res, next) {
 };
 
 exports.search = function (req, res, next) {
-    var tel;
-    Phone.find({name: req.params.search}, function (err, phone) {
-        if (err) {
-            return res.status(422).send( {error: 'Erro ao buscar setor'} );
-        }
-        tel = phone;
-    });
     Department.find({name: req.params.search}, function (err, department) {
         if (err) {
             return res.status(422).send( {error: 'Erro ao buscar setor'} );
         }
-        var result = [ { name: department[0].name, description: department[0].description,
-            phone: tel[0].telephone, informations: department[0].informations } ];
+        result = [ { name: department[0].name, description: department[0].description,  informations: department[0].informations } ];
         return res.status(200).json( result );
     });
 };

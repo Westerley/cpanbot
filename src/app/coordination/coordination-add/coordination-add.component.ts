@@ -14,7 +14,7 @@ import { CoordinationService } from '../coordination.service';
 export class CoordinationAddComponent implements OnInit {
 
     coordination = new Coordination();
-    options = ['BACHARELADO', 'LICENCIATURA'];
+    options = ['BACHARELADO', 'LICENCIATURA', 'PÓSGRADUAÇÃO'];
     error = '';
     success = '';
 

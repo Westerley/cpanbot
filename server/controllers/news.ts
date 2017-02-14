@@ -4,7 +4,10 @@ var News    = require('../models/news'),
 
 exports.save = function (req, res, next) {
 
-    request('http://cpan.sites.ufms.br/noticias/', function(error, response, html){
+    request({
+        method: "GET",
+        "rejectUnauthorized": false,
+        "url": "https://cpan.ufms.br/noticias/"}, function(error, response, html){
 
         if(!error){
 
@@ -36,6 +39,8 @@ exports.save = function (req, res, next) {
 
             return res.status(200).json( {success: "Notícia salva"} );
 
+        } else {
+            return res.status(204).json( {success: "Não foi possível salva a notícia"} );
         }
 
     });
