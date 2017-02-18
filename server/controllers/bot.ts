@@ -137,7 +137,11 @@ function receivedMessage(event) {
         } else if (quickPayload[0] == "Department") {
             sendDepartmentResponseMessage(senderID, quickPayload[1]);
         } else if (quickPayload[0] == "Course") {
-            sendCourseResponseMessage(senderID, quickPayload[1]);
+            if (quickPayload[1] == "INGRESSO") {
+                sendHomeMessage(senderID);
+            } else {
+                sendCourseResponseMessage(senderID, quickPayload[1]);
+            }
         }
 
         return;
@@ -258,9 +262,9 @@ function receivedPostback(event) {
             sendMessage(senderID, msg_bot.message_selection);
         }, 1500);
 
+    } else {
+        sendTextMessage(senderID, "");
     }
-
-    sendTextMessage(senderID, msg_bot.message_error);
 }
 
 function receivedDeliveryConfirmation(event) {
@@ -637,6 +641,11 @@ function sendCourseMessage(recipientId) {
                     "content_type":"text",
                     "title":"Pós-graduação",
                     "payload":"Course|PÓSGRADUAÇÃO"
+                },
+                {
+                    "content_type":"text",
+                    "title":"Formas de Ingresso",
+                    "payload":"Course|INGRESSO"
                 }
             ]
         }
