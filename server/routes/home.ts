@@ -7,7 +7,7 @@ router.post('/create', passport.authenticate('jwt', { session: false }), homeCon
 
 router.get('/', homeController.list);
 
-router.get('/search/:search', homeController.search);
+router.get('/search/:id', homeController.search);
 
 router.get('/:id', homeController.show);
 

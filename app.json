@@ -1,6 +1,6 @@
 {
-  "name": "Angular2 Express Starter",
+  "name": "CPAN BOT",
   "description": "Starter application of Angular2 with Express",
-  "repository": "https://github.com/vladotesanovic/angular2-express-starter",
+  "repository": "https://github.com/Westerley/cpanbot",
   "keywords": ["angular2", "express", "node"]
 }

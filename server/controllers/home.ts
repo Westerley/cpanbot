@@ -28,7 +28,7 @@ exports.list = function (req, res, next) {
 };
 
 exports.search = function (req, res, next) {
-    Home.find({option: req.params.search}, function (err, home) {
+    Home.findById(req.params.id, function (err, home) {
         if (err) {
             return res.status(422).send( {error: 'Erro ao buscar informação'} );
         }

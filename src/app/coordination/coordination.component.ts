@@ -23,7 +23,7 @@ export class CoordinationComponent implements OnInit {
                 if (typeof err.error === 'undefined') {
                     this.router.navigate(['/login']);
                 } else {
-                    alert('Não foi possivel carregar as informações');
+                    alert(" " + err.error);
                 }
             });
     }
@@ -43,7 +43,11 @@ export class CoordinationComponent implements OnInit {
                         }
                     }
                 }, err => {
-                    alert('Não foi possivel deletar a coordenação');
+                    if (typeof err.error === 'undefined') {
+                        this.router.navigate(['/login']);
+                    } else {
+                        alert(" " + err.error);
+                    }
                 });
         }
     }

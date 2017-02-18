@@ -30,6 +30,7 @@ exports.list = function (req, res, next) {
 };
 
 exports.search = function (req, res, next) {
+    var result;
     Department.find({name: req.params.search}, function (err, department) {
         if (err) {
             return res.status(422).send( {error: 'Erro ao buscar setor'} );

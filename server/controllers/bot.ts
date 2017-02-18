@@ -1,14 +1,39 @@
 var express    = require('express'),
     config     = require('../config/config'),
+    msg_bot    = require('../config/message'),
     request    = require('request'),
     natural    = require('natural'),
     bodyParser = require('body-parser'),
-    PortugueseStemmer = require('snowball-stemmer.jsx/dest/portuguese-stemmer.common.js').PortugueseStemmer,
-    stemmer    = new PortugueseStemmer(),
     classifier = new natural.BayesClassifier(),
     app        = express();
 
+import { createHmac } from 'crypto';
+
+app.use(bodyParser.json({ verify: verifyRequestSignature }));
+
+function verifyRequestSignature(req, res, buf) {
+    var signature = req.headers["x-hub-signature"];
+
+    if (!signature) {
+        console.error("Couldn't validate the signature.");
+    } else {
+        var elements = signature.split('=');
+        var method = elements[0];
+        var signatureHash = elements[1];
+
+        var expectedHash = createHmac('sha1', config.appSecret)
+            .update(buf)
+            .digest('hex');
+
+        if (signatureHash != expectedHash) {
+            throw new Error("Couldn't validate the request signature.");
+        }
+    }
+}
+
 function removeAccent(str) {
+    var character = /\^|~|\?|,|\*|\.|\-/g;
+    str = str.replace(character, "");
     var accent = 'áàãâäéèêëíìîïóòõôöúùûüçÁÀÃÂÄÉÈÊËÍÌÎÏÓÒÕÖÔÚÙÛÜÇ';
     var not_accent = 'aaaaaeeeeiiiiooooouuuucAAAAAEEEEIIIIOOOOOUUUUC';
     var word = '';
@@ -23,29 +48,25 @@ function removeAccent(str) {
     return word.toLowerCase();
 }
 
-function stemming(str) {
-    var new_text = "";
-    str = str.split(" ");
-    for (var i = 0; i < str.length; i++) {
-        new_text += " " + removeAccent(stemmer.stemWord(str[i]));
-    }
-    return new_text.trim();
-}
-
 function trainData() {
     classifier.addDocument('noticias', 'notic');
+    classifier.addDocument('novidades', 'notic');
     classifier.addDocument('informacoes', 'inform');
     classifier.addDocument('setor', 'department');
     classifier.addDocument('departamento', 'department');
     classifier.addDocument('telefone', 'telefon');
     classifier.addDocument('tel cel', 'telefon');
     classifier.addDocument('curso', 'cours');
+    classifier.addDocument('bacharelado', 'bacharelado');
+    classifier.addDocument('licenciatura', 'licenciatura');
+    classifier.addDocument('pos-graduacao pos graduacao', 'pos');
     classifier.addDocument('nao tchau bye',  'no');
     classifier.addDocument('oi', 'initial');
     classifier.addDocument('ola', 'initial');
     classifier.addDocument('bom dia', 'initial');
     classifier.addDocument('boa tarde', 'initial');
     classifier.addDocument('boa noite', 'initial');
+    classifier.addDocument('forma de ingresso', 'ingresso');
     classifier.train();
     classifier.save('classifier.json', function(err, classifier) { } );
 }
@@ -129,10 +150,9 @@ function receivedMessage(event) {
             messageText = classifier.getClassifications(removeAccent(messageText));
 
             var result = false;
-            for (var i = 0; i < messageText.length; i++) {
-                if (messageText[i].value > 0.34) {
-                    result = true;
-                }
+            var value = messageText[0].value;
+            if (value > 0.315) {
+                result = true;
             }
 
             if (result) {
@@ -146,7 +166,7 @@ function receivedMessage(event) {
                     sendNewsMessage(senderID);
                     break;
                 case 'inform':
-                    sendInfoMessage(senderID);
+                    sendInfoMessage(senderID, msg_bot.message_information_question);
                     break;
                 case 'telefon':
                     sendPhoneMessage(senderID);
@@ -155,17 +175,28 @@ function receivedMessage(event) {
                     sendDepartmentMessage(senderID);
                     break;
                 case 'no':
-                    sendTextMessage(senderID, "Ok, volte sempre!!!");
+                    sendTextMessage(senderID, msg_bot.message_end);
                     break;
                 case 'initial':
-                    sendMessage(senderID, "Olá, veja abaixo as categorias em que posso te ajudar ou você pode me fazer uma pergunta.");
+                    sendMessage(senderID, msg_bot.message_welcome);
                     break;
                 case 'cours':
                     sendCourseMessage(senderID);
                     break;
+                case 'bacharelado':
+                    sendCourseResponseMessage(senderID, 'BACHARELADO');
+                    break;
+                case 'licenciatura':
+                    sendCourseResponseMessage(senderID, 'LICENCIATURA');
+                    break;
+                case 'pos':
+                    sendCourseResponseMessage(senderID, 'PÓSGRADUAÇÃO');
+                    break;
+                case 'ingresso':
+                    sendHomeMessage(senderID);
+                    break;
                 default:
-                    sendMessage(senderID,  "Desculpe, eu não entendi o que você digitou. Tente me perguntar de uma maneira diferente, ou selecione " +
-                        "uma das categorias abaixo!");
+                    sendMessage(senderID, msg_bot.message_not_understand);
             }
 
         });
@@ -210,7 +241,7 @@ function receivedPostback(event) {
     if (payload[0] == "NEWS") {
         sendNewsMessage(senderID);
     } else if (payload[0] == "INFO") {
-        sendInfoMessage(senderID);
+        sendInfoMessage(senderID, msg_bot.message_information_question);
     } else if (payload[0] == "PHONE") {
         sendPhoneMessage(senderID);
     } else if (payload[0] == "DEPARTMENT") {
@@ -219,13 +250,17 @@ function receivedPostback(event) {
         sendDepartmentDoubtResponseMessage(senderID, payload[1]);
     } else if (payload[0] == 'COURSES') {
         sendCourseMessage(senderID);
-    } else if (payload[0] == "USER_DEFINED_PAYLOAD") {
-        sendTextMessage(senderID, "Olá, eu sou o CPAN BOT. Eu posso lhe enviar informações " +
-            "sobre o Câmpus do Pantanal (UFMS), e as últimas notícias postadas no site para te manter atualizado. ");
-        sendMessage(senderID,  "Veja abaixo as categorias em que posso te ajudar ou você pode me fazer uma pergunta.");
+    } else if (payload[0] == 'INITIAL') {
+        sendMessage(senderID,  msg_bot.message_selection);
+    } else if (payload[0] == "STARTED_BUTTON_PAYLOAD") {
+        sendTextMessage(senderID, msg_bot.message_first_interaction);
+        setTimeout(function () {
+            sendMessage(senderID, msg_bot.message_selection);
+        }, 1500);
+
     }
 
-    //sendTextMessage(senderID);
+    sendTextMessage(senderID, msg_bot.message_error);
 }
 
 function receivedDeliveryConfirmation(event) {
@@ -322,7 +357,7 @@ function sendNewsMessage(recipientId) {
 
     var dados;
 
-    request("http://localhost:3000/api/news/list",  function(error, response, data) {
+    request("https://cpanbot.herokuapp.com/api/news/list",  function(error, response, data) {
         if (response.statusCode == 200) {
 
             dados = JSON.parse(data);
@@ -369,24 +404,24 @@ function sendNewsMessage(recipientId) {
                 }
             };
 
-            sendTextMessage(recipientId, "Aqui estão as últimas notícias postadas no site! ;)");
+            sendTextMessage(recipientId, msg_bot.message_news);
             setTimeout(function () {
                 callSendAPI(messageData);
-            }, 1000);
+            }, 1500);
 
         } else {
-            sendTextMessage(recipientId, "Não foi possível buscar as notícias");
+            sendTextMessage(recipientId, msg_bot.message_error_news);
         }
 
     });
 
     setTimeout(function () {
-        sendMessage(recipientId, "Deseja algo mais?");
-    }, 1500);
+        sendMessage(recipientId, msg_bot.message_initial_question);
+    }, 2500);
 
 }
 
-function sendInfoMessage(recipientId) {
+function sendInfoMessage(recipientId, text) {
     var messageData = {
         recipient: {
             id: recipientId
@@ -396,7 +431,7 @@ function sendInfoMessage(recipientId) {
                 type: "template",
                 payload: {
                     template_type: "button",
-                    text: "Quais informações você deseja?",
+                    text: text,
                     buttons:[{
                         type: "postback",
                         title: "Telefones",
@@ -424,7 +459,7 @@ function sendPhoneMessage(recipientId) {
             id: recipientId
         },
         message: {
-            text: "Quais telefones você deseja?",
+            text: msg_bot.message_phone_question,
             quick_replies: [
                 {
                     "content_type":"text",
@@ -452,7 +487,7 @@ function sendPhoneResponseMessage(recipientId, name) {
 
     var dados;
 
-    request.get("http://localhost:3000/api/phone/search/" + name,  function(error, response, data) {
+    request.get("https://cpanbot.herokuapp.com/api/phone/search/" + name,  function(error, response, data) {
         if (response.statusCode == 200) {
 
             dados = JSON.parse(data);
@@ -463,13 +498,13 @@ function sendPhoneResponseMessage(recipientId, name) {
             sendTextMessage(recipientId, message);
 
         } else {
-            sendTextMessage(recipientId, "Não foi possível buscar telefone");
+            sendTextMessage(recipientId, msg_bot.message_error_phone);
         }
 
     });
 
     setTimeout(function () {
-        sendMessage(recipientId, "Deseja algo mais?");
+        sendInfoMessage(recipientId, msg_bot.message_initial_question);
     }, 1500);
 
 }
@@ -480,7 +515,7 @@ function sendDepartmentMessage(recipientId) {
             id: recipientId
         },
         message: {
-            text: "Qual setor você deseja?",
+            text: msg_bot.message_department_question,
             quick_replies: [
                 {
                     "content_type":"text",
@@ -507,18 +542,14 @@ function sendDepartmentMessage(recipientId) {
 function sendDepartmentResponseMessage(recipientId, name) {
     var dados;
 
-    request("http://localhost:3000/api/department/search/" + name,  function(error, response, data) {
+    request("https://cpanbot.herokuapp.com/api/department/search/" + name,  function(error, response, data) {
+
         if (response.statusCode == 200) {
 
             dados = JSON.parse(data);
             var message = "";
-            message += '✓ SETOR: ' + dados[0].name + "\n";
-            message += '✓ DESCRIÇÃO: ' + dados[0].description + "\n";
-            message += '✓ SUPERVISOR: ' + dados[0].supervisor + "\n";
-            message += '✓ TELEFONE: ' + dados[0].phone + "\n";
-            message += '✓ EMAIL: ' + dados[0].email + "\n";
-            message += '✓ HORÁRIO: ' + dados[0].hours_operation + "\n";
-            message += '✓ LOCALIZAÇÃO: ' +  dados[0].place + "\n";
+            message += '✓ NOME: ' + dados[0].name + "\n";
+            message += dados[0].description + "\n";
 
             var messageData = {
                 recipient: {
@@ -543,7 +574,7 @@ function sendDepartmentResponseMessage(recipientId, name) {
             callSendAPI(messageData);
 
         } else {
-            sendTextMessage(recipientId, "Não foi possível buscar o setor");
+            sendTextMessage(recipientId, msg_bot.message_error_department);
         }
 
     });
@@ -554,31 +585,31 @@ function sendDepartmentDoubtResponseMessage(recipientId, name) {
 
     var dados;
 
-    request("http://localhost:3000/api/department/search/" + name,  function(error, response, data) {
+    request("https://cpanbot.herokuapp.com/api/department/search/" + name,  function(error, response, data) {
         if (response.statusCode == 200) {
 
             dados = JSON.parse(data);
 
-            var message = "";
+            var msg = "";
             if (dados[0].informations.length > 0) {
                 for (var i = 0; i < dados[0].informations.length; i++) {
-                    message += "☛ " + dados[0].informations[i].question + "\n✓ " + dados[0].informations[i].answer;
-                    message += "\n\n";
+                    msg += "☛ " + dados[0].informations[i].question + "\n✓ " + dados[0].informations[i].answer;
+                    msg += "\n\n";
                 }
             } else {
-                message = "Ops, neste setor não tem mais informações :/";
+                msg = msg_bot.message_not_more_information;
             }
 
-            sendTextMessage(recipientId, message);
+            sendTextMessage(recipientId, msg);
 
         } else {
-            sendTextMessage(recipientId, "Não foi possível buscar mais informações");
+            sendTextMessage(recipientId, msg_bot.message_error_more_information);
         }
 
     });
 
     setTimeout(function () {
-        sendMessage(recipientId, "Deseja algo mais?");
+        sendInfoMessage(recipientId, msg_bot.message_initial_question);
     }, 1500);
 
 }
@@ -590,7 +621,7 @@ function sendCourseMessage(recipientId) {
             id: recipientId
         },
         message: {
-            text: "Qual curso você deseja?",
+            text: msg_bot.message_course_question,
             quick_replies: [
                 {
                     "content_type":"text",
@@ -601,6 +632,11 @@ function sendCourseMessage(recipientId) {
                     "content_type":"text",
                     "title":"Licenciatura",
                     "payload":"Course|LICENCIATURA"
+                },
+                {
+                    "content_type":"text",
+                    "title":"Pós-graduação",
+                    "payload":"Course|PÓSGRADUAÇÃO"
                 }
             ]
         }
@@ -612,52 +648,248 @@ function sendCourseMessage(recipientId) {
 
 function sendCourseResponseMessage(recipientId, type) {
 
-    var dados;
-
-    request("http://localhost:3000/api/coordination/search/" + type,  function(error, response, data) {
+    request("https://cpanbot.herokuapp.com/api/coordination/search/" + type,  function(error, response, data) {
         if (response.statusCode == 200) {
 
-            dados = JSON.parse(data);
+            var dados = JSON.parse(data);
+            var messageData;
 
-            var messageData = {
-                recipient: {
-                    id: recipientId
-                },
-                message: {
-                    attachment: {
-                        type: "template",
-                        payload: {
-                            template_type: "generic",
-                            elements: [{
-                                title: dados[0].course,
-                                subtitle: dados[0].office_hour,
-                                item_url: "",
-                                image_url: "http://cpan.sites.ufms.br/files/2015/02/cpan-240x.jpg",
-                                buttons: [{
-                                    type: "web_url",
-                                    url: dados[0].link,
-                                    title: "Acessar o Site"
-                                }],
-                            }]
+            if (type == 'BACHARELADO') {
+                messageData = {
+                    recipient: {
+                        id: recipientId
+                    },
+                    message: {
+                        attachment: {
+                            type: "template",
+                            payload: {
+                                template_type: "generic",
+                                elements: [{
+                                    title: dados[0].course,
+                                    subtitle: 'Atendimento: ' + dados[0].office_hour,
+                                    item_url: "",
+                                    image_url: "http://epds.ufms.br/wp-content/uploads/2014/10/cpan.jpg",
+                                    buttons: [{
+                                        type: "web_url",
+                                        url: dados[0].link,
+                                        title: "Acessar o Site"
+                                    }],
+                                }, {
+                                    title: dados[1].course,
+                                    subtitle: 'Atendimento: ' + dados[1].office_hour,
+                                    item_url: "",
+                                    image_url: "http://epds.ufms.br/wp-content/uploads/2014/10/cpan.jpg",
+                                    buttons: [{
+                                        type: "web_url",
+                                        url: dados[1].link,
+                                        title: "Acessar o Site"
+                                    }],
+                                }, {
+                                    title: dados[2].course,
+                                    subtitle: 'Atendimento: ' + dados[2].office_hour,
+                                    item_url: "",
+                                    image_url: "http://epds.ufms.br/wp-content/uploads/2014/10/cpan.jpg",
+                                    buttons: [{
+                                        type: "web_url",
+                                        url: dados[2].link,
+                                        title: "Acessar o Site"
+                                    }],
+                                }, {
+                                    title: dados[3].course,
+                                    subtitle: 'Atendimento: ' + dados[3].office_hour,
+                                    item_url: "",
+                                    image_url: "http://epds.ufms.br/wp-content/uploads/2014/10/cpan.jpg",
+                                    buttons: [{
+                                        type: "web_url",
+                                        url: dados[3].link,
+                                        title: "Acessar o Site"
+                                    }],
+                                }, {
+                                    title: dados[4].course,
+                                    subtitle: 'Atendimento: ' + dados[4].office_hour,
+                                    item_url: "",
+                                    image_url: "http://epds.ufms.br/wp-content/uploads/2014/10/cpan.jpg",
+                                    buttons: [{
+                                        type: "web_url",
+                                        url: dados[4].link,
+                                        title: "Acessar o Site"
+                                    }],
+                                }]
+                            }
                         }
                     }
-                }
-            };
+                };
+            } else if (type == 'LICENCIATURA') {
+                messageData = {
+                    recipient: {
+                        id: recipientId
+                    },
+                    message: {
+                        attachment: {
+                            type: "template",
+                            payload: {
+                                template_type: "generic",
+                                elements: [{
+                                    title: dados[0].course,
+                                    subtitle: 'Atendimento: ' + dados[0].office_hour,
+                                    item_url: "",
+                                    image_url: "http://epds.ufms.br/wp-content/uploads/2014/10/cpan.jpg",
+                                    buttons: [{
+                                        type: "web_url",
+                                        url: dados[0].link,
+                                        title: "Acessar o Site"
+                                    }],
+                                }, {
+                                    title: dados[1].course,
+                                    subtitle: 'Atendimento: ' + dados[1].office_hour,
+                                    item_url: "",
+                                    image_url: "http://epds.ufms.br/wp-content/uploads/2014/10/cpan.jpg",
+                                    buttons: [{
+                                        type: "web_url",
+                                        url: dados[1].link,
+                                        title: "Acessar o Site"
+                                    }],
+                                }, {
+                                    title: dados[2].course,
+                                    subtitle: 'Atendimento: ' + dados[2].office_hour,
+                                    item_url: "",
+                                    image_url: "http://epds.ufms.br/wp-content/uploads/2014/10/cpan.jpg",
+                                    buttons: [{
+                                        type: "web_url",
+                                        url: dados[2].link,
+                                        title: "Acessar o Site"
+                                    }],
+                                }, {
+                                    title: dados[3].course,
+                                    subtitle: 'Atendimento: ' + dados[3].office_hour,
+                                    item_url: "",
+                                    image_url: "http://epds.ufms.br/wp-content/uploads/2014/10/cpan.jpg",
+                                    buttons: [{
+                                        type: "web_url",
+                                        url: dados[3].link,
+                                        title: "Acessar o Site"
+                                    }],
+                                }, {
+                                    title: dados[4].course,
+                                    subtitle: 'Atendimento: ' + dados[4].office_hour,
+                                    item_url: "",
+                                    image_url: "http://epds.ufms.br/wp-content/uploads/2014/10/cpan.jpg",
+                                    buttons: [{
+                                        type: "web_url",
+                                        url: dados[4].link,
+                                        title: "Acessar o Site"
+                                    }],
+                                }, {
+                                    title: dados[5].course,
+                                    subtitle: 'Atendimento: ' + dados[5].office_hour,
+                                    item_url: "",
+                                    image_url: "http://epds.ufms.br/wp-content/uploads/2014/10/cpan.jpg",
+                                    buttons: [{
+                                        type: "web_url",
+                                        url: dados[5].link,
+                                        title: "Acessar o Site"
+                                    }],
+                                }, {
+                                    title: dados[6].course,
+                                    subtitle: 'Atendimento: ' + dados[6].office_hour,
+                                    item_url: "",
+                                    image_url: "http://epds.ufms.br/wp-content/uploads/2014/10/cpan.jpg",
+                                    buttons: [{
+                                        type: "web_url",
+                                        url: dados[6].link,
+                                        title: "Acessar o Site"
+                                    }],
+                                }, {
+                                    title: dados[7].course,
+                                    subtitle: 'Atendimento: ' + dados[7].office_hour,
+                                    item_url: "",
+                                    image_url: "http://epds.ufms.br/wp-content/uploads/2014/10/cpan.jpg",
+                                    buttons: [{
+                                        type: "web_url",
+                                        url: dados[7].link,
+                                        title: "Acessar o Site"
+                                    }],
+                                }]
+                            }
+                        }
+                    }
+                };
+            } else if (type == 'PÓSGRADUAÇÃO') {
+                messageData = {
+                    recipient: {
+                        id: recipientId
+                    },
+                    message: {
+                        attachment: {
+                            type: "template",
+                            payload: {
+                                template_type: "generic",
+                                elements: [{
+                                    title: dados[0].course,
+                                    subtitle: 'Atendimento: ' + dados[0].office_hour,
+                                    item_url: "",
+                                    image_url: "http://epds.ufms.br/wp-content/uploads/2014/10/cpan.jpg",
+                                    buttons: [{
+                                        type: "web_url",
+                                        url: dados[0].link,
+                                        title: "Acessar o Site"
+                                    }],
+                                }, {
+                                    title: dados[1].course,
+                                    subtitle: 'Atendimento: ' + dados[1].office_hour,
+                                    item_url: "",
+                                    image_url: "http://epds.ufms.br/wp-content/uploads/2014/10/cpan.jpg",
+                                    buttons: [{
+                                        type: "web_url",
+                                        url: dados[1].link,
+                                        title: "Acessar o Site"
+                                    }],
+                                }, {
+                                    title: dados[2].course,
+                                    subtitle: 'Atendimento: ' + dados[2].office_hour,
+                                    item_url: "",
+                                    image_url: "http://epds.ufms.br/wp-content/uploads/2014/10/cpan.jpg",
+                                    buttons: [{
+                                        type: "web_url",
+                                        url: dados[2].link,
+                                        title: "Acessar o Site"
+                                    }],
+                                }]
+                            }
+                        }
+                    }
+                };
+            }
 
-            sendTextMessage(recipientId, "Aqui estão os cursos oferecidos pelo CPAN! ;)");
+            sendTextMessage(recipientId, msg_bot.message_course);
             setTimeout(function () {
                 callSendAPI(messageData);
-            }, 1000);
+            }, 1500);
 
         } else {
-            sendTextMessage(recipientId, "Não foi possível buscar os cursos");
+            sendTextMessage(recipientId, msg_bot.message_error_course);
         }
 
     });
 
     setTimeout(function () {
-        sendMessage(recipientId, "Deseja algo mais?");
-    }, 2000);
+        sendInfoMessage(recipientId, msg_bot.message_initial_question);
+    }, 3000);
 
+}
+
+function sendHomeMessage(recipientId) {
+    request.get("https://cpanbot.herokuapp.com/api/home/search/588a92be477461121cca10da",  function(error, response, data) {
+        if (response.statusCode == 200) {
+
+            var dados = JSON.parse(data);
+            var message = dados.name;
+            sendTextMessage(recipientId, message);
+
+        } else {
+            sendTextMessage(recipientId, msg_bot.message_error_form_entry);
+        }
+
+    });
 }
 

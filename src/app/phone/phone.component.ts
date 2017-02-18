@@ -30,6 +30,8 @@ export class PhoneComponent implements OnInit {
             }, err => {
                 if (typeof err.error === 'undefined') {
                     this.router.navigate(['/login']);
+                } else {
+                    alert(" " + err.error);
                 }
             });
     }
