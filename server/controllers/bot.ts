@@ -552,7 +552,6 @@ function sendDepartmentResponseMessage(recipientId, name) {
 
             dados = JSON.parse(data);
             var message = "";
-            message += '✓ NOME: ' + dados[0].name + "\n";
             message += dados[0].description + "\n";
 
             var messageData = {
@@ -835,7 +834,7 @@ function sendCourseResponseMessage(recipientId, type) {
                                 template_type: "generic",
                                 elements: [{
                                     title: dados[0].course,
-                                    subtitle: 'Atendimento: ' + dados[0].office_hour,
+                                    subtitle: "",
                                     item_url: "",
                                     image_url: "http://epds.ufms.br/wp-content/uploads/2014/10/cpan.jpg",
                                     buttons: [{
@@ -845,7 +844,7 @@ function sendCourseResponseMessage(recipientId, type) {
                                     }],
                                 }, {
                                     title: dados[1].course,
-                                    subtitle: 'Atendimento: ' + dados[1].office_hour,
+                                    subtitle: "",
                                     item_url: "",
                                     image_url: "http://epds.ufms.br/wp-content/uploads/2014/10/cpan.jpg",
                                     buttons: [{
@@ -855,7 +854,7 @@ function sendCourseResponseMessage(recipientId, type) {
                                     }],
                                 }, {
                                     title: dados[2].course,
-                                    subtitle: 'Atendimento: ' + dados[2].office_hour,
+                                    subtitle: "",
                                     item_url: "",
                                     image_url: "http://epds.ufms.br/wp-content/uploads/2014/10/cpan.jpg",
                                     buttons: [{
