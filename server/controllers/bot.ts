@@ -52,6 +52,7 @@ function trainData() {
     classifier.addDocument('noticias', 'notic');
     classifier.addDocument('novidades', 'notic');
     classifier.addDocument('informacoes', 'inform');
+    classifier.addDocument('informacao', 'inform');
     classifier.addDocument('setor', 'department');
     classifier.addDocument('departamento', 'department');
     classifier.addDocument('telefone', 'telefon');
@@ -155,7 +156,7 @@ function receivedMessage(event) {
 
             var result = false;
             var value = messageText[0].value;
-            if (value > 0.315) {
+            if (value >= 0.3) {
                 result = true;
             }
 
