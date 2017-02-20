@@ -597,14 +597,12 @@ function sendDepartmentDoubtResponseMessage(recipientId, name) {
             var msg = "";
             if (dados[0].informations.length > 0) {
                 for (var i = 0; i < dados[0].informations.length; i++) {
-                    msg += "☛ " + dados[0].informations[i].question + "\n✓ " + dados[0].informations[i].answer;
-                    msg += "\n\n";
+                    msg = "☛ " + dados[0].informations[i].question + "\n✓ " + dados[0].informations[i].answer;
+                    sendTextMessage(recipientId, msg);
                 }
             } else {
-                msg = msg_bot.message_not_more_information;
+                sendTextMessage(recipientId, msg_bot.message_not_more_information);
             }
-
-            sendTextMessage(recipientId, msg);
 
         } else {
             sendTextMessage(recipientId, msg_bot.message_error_more_information);
@@ -900,5 +898,9 @@ function sendHomeMessage(recipientId) {
         }
 
     });
+
+    setTimeout(function () {
+        sendInfoMessage(recipientId, msg_bot.message_initial_question);
+    }, 1500);
 }
 
