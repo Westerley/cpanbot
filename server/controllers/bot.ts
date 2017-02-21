@@ -1184,7 +1184,7 @@ function sendIndividualCourse(recipientId, name) {
 
     setTimeout(function () {
         sendInfoMessage(recipientId, msg_bot.message_initial_question);
-    }, 1500);
+    }, 3000);
 
 }
 
