@@ -2,6 +2,7 @@ module.exports = {
     message_first_interaction: "Olá, eu sou o CPAN BOT. Eu posso lhe enviar informações sobre o Câmpus do Pantanal (UFMS), e as últimas notícias postadas no site para te manter atualizado",
     message_welcome: "Olá, o que você precisa saber? Selecione uma das categorias abaixo ou você pode me fazer uma pergunta",
     message_selection: "O que você precisa saber? Selecione uma das categorias abaixo ou você pode me fazer uma pergunta",
+    message_selection_2: "Selecione uma das categorias abaixo ou você pode me fazer uma pergunta",
     message_information_question: "Quais informações você deseja?",
     message_course_question: "Qual curso você deseja?",
     message_course: "Aqui estão os cursos oferecidos pelo CPAN! ;)",
@@ -18,6 +19,5 @@ module.exports = {
     message_end: "Ok! Obrigado pela visita e volte sempre!!!",
     message_not_understand: "Desculpe, eu não entendi o que você digitou. Tente me perguntar de uma maneira diferente, ou selecione " +
     "uma das categorias abaixo!",
-    message_error_form_entry: "Desculpe, não foi possível buscar pelas formas de ingresso",
-    message_error: "Ops! Não foi possível buscar pela informação"
+    message_error_form_entry: "Desculpe, não foi possível buscar pelas formas de ingresso"
 };

@@ -39,7 +39,7 @@ exports.list = function (req, res, next) {
 exports.search = function (req, res, next) {
     Coordination.find({type: req.params.search}, function (err, coordination) {
         if (err) {
-            return res.status(422).send( {error: 'Erro ao buscar coordenação'} );
+            return res.status(422).send( {error: 'Erro ao buscar curso'} );
         }
         return res.status(200).json( coordination );
     });
