@@ -1,6 +1,9 @@
 {
   "name": "cpanbot",
   "version": "1.0.0",
+  "engines": {
+    "node": "6.9.1"
+  },
   "description": "Bot para o campus do pantanal",
   "main": "server/app.js",
   "license": "MIT",
