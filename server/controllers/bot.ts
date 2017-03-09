@@ -88,6 +88,9 @@ function trainData() {
     classifier.addDocument('mestrado', 'pos');
     classifier.addDocument('doutorado', 'pos');
     classifier.addDocument('nao tchau bye nada',  'no');
+    classifier.addDocument('ok', 'no');
+    classifier.addDocument('obrigado', 'no');
+    classifier.addDocument('obrigada', 'no');
     classifier.addDocument('sim',  'yes');
     classifier.addDocument('yeh',  'yes');
     classifier.addDocument('desejo',  'yes');
@@ -96,7 +99,10 @@ function trainData() {
     classifier.addDocument('bom dia', 'initial');
     classifier.addDocument('boa tarde', 'initial');
     classifier.addDocument('boa noite', 'initial');
-    classifier.addDocument('forma de ingresso', 'ingresso');
+    classifier.addDocument('ingresso', 'ingresso');
+    classifier.addDocument('quais são as formas de ingresso', 'ingresso');
+    classifier.addDocument('como entrar na faculdade', 'ingresso');
+    classifier.addDocument('como faco para entrar na universidade', 'ingresso');
     classifier.train();
     classifier.save('classifier.json', function(err, classifier) { } );
 }
@@ -185,7 +191,7 @@ function receivedMessage(event) {
 
             var result = false;
             var value = messageText[0].value;
-            if (value >= 0.122) {
+            if (value >= 0.096) {
                 result = true;
             }
 
