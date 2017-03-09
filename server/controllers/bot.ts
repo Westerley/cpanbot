@@ -332,7 +332,7 @@ function receivedPostback(event) {
     } else if (payload[0] == 'COURSES') {
         sendCourseMessage(senderID);
     } else if (payload[0] == 'INITIAL') {
-        sendMessage(senderID,  msg_bot.message_selection);
+        sendMessage(senderID,  msg_bot.message_first_interaction);
     } else if (payload[0] == "STARTED_BUTTON_PAYLOAD") {
         sendTextMessage(senderID, msg_bot.message_first_interaction);
         setTimeout(function () {
